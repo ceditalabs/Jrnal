@@ -5,11 +5,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <None Remove="Db\Sql\0000.MigrationHistory.provision.sql" />
+    <None Remove="Db\Sql\0001.EventTables.provision.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Db\Sql\0001.EventTables.provision.sql" />
+    <EmbeddedResource Include="Db\Sql\0000.MigrationHistory.provision.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Chic" Version="0.1.6-preview-g5962e4a034" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cedita.Labs.Jrnal.Models\Cedita.Labs.Jrnal.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

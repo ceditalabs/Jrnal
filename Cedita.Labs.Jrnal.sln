@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedita.Labs.Jrnal", "Cedita.Labs.Jrnal\Cedita.Labs.Jrnal.csproj", "{79373D37-629D-4BA1-8AD1-9451262123A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cedita.Labs.Jrnal", "Cedita.Labs.Jrnal\Cedita.Labs.Jrnal.csproj", "{79373D37-629D-4BA1-8AD1-9451262123A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cedita.Labs.Jrnal.Models", "Cedita.Labs.Jrnal.Models\Cedita.Labs.Jrnal.Models.csproj", "{7F2561CE-D7C6-4948-B740-687ED5165822}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedita.Labs.Jrnal.Web", "Cedita.Labs.Jrnal.Web\Cedita.Labs.Jrnal.Web.csproj", "{64047F31-CFB3-4C9F-AEFE-7A8F92EAB6FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{79373D37-629D-4BA1-8AD1-9451262123A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79373D37-629D-4BA1-8AD1-9451262123A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79373D37-629D-4BA1-8AD1-9451262123A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F2561CE-D7C6-4948-B740-687ED5165822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F2561CE-D7C6-4948-B740-687ED5165822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F2561CE-D7C6-4948-B740-687ED5165822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F2561CE-D7C6-4948-B740-687ED5165822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64047F31-CFB3-4C9F-AEFE-7A8F92EAB6FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64047F31-CFB3-4C9F-AEFE-7A8F92EAB6FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64047F31-CFB3-4C9F-AEFE-7A8F92EAB6FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64047F31-CFB3-4C9F-AEFE-7A8F92EAB6FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
