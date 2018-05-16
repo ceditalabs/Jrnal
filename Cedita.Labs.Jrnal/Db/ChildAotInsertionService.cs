@@ -87,6 +87,8 @@ SELECT ApplicationId, Timestamp, Level, MessageTemplate, HasException, AotInsert
 
                     var obj = (IEnumerable<Models.Event>)(models);
                     await InsertWithChildrenAsync(obj.SelectMany(m => m.Properties), false, 1+tmpLevel, txn);
+                    // Manual high levelling to avoid conflicts with lower levels on Property recursion
+                    await InsertWithChildrenAsync(obj.SelectMany(m => m.RenderingGroups), false, 68+tmpLevel, txn);
                 }
                 else if (typeof(TModel) == typeof(Db.Models.Property))
                 {
