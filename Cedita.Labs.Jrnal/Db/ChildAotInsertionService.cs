@@ -27,14 +27,14 @@ namespace Cedita.Labs.Jrnal.Db
         {
             if (withMap)
             {
-                Console.WriteLine($"{DateTime.Now} AOT Marker Creation");
+                Console.WriteLine($"{DateTime.Now:o} AOT Marker Creation");
                 curAot = 0;
                 ConfigureAotMarkers(models);
                 curAot = 0;
-                Console.WriteLine($"{DateTime.Now} AOT Marker Creation Completed");
+                Console.WriteLine($"{DateTime.Now:o} AOT Marker Creation Completed");
             }
 
-            Console.WriteLine($"{DateTime.Now} Commit level {tmpLevel} executing ({typeof(TModel)}) w/ {models.Count()} models");
+            Console.WriteLine($"{DateTime.Now:o} Commit level {tmpLevel} executing ({typeof(TModel)}) w/ {models.Count()} models");
 
             if (typeof(TModel) == typeof(Db.Models.SingleRendering))
             {
@@ -163,9 +163,9 @@ SELECT EventId, Name, AotInsertionMarker FROM #Tmp{tmpLevel}", transaction: txn)
 
                 if (tmpLevel == 0)
                 {
-                    Console.WriteLine($"{DateTime.Now} Commit level 0 transaction completion");
+                    Console.WriteLine($"{DateTime.Now:o} Commit level 0 transaction completion");
                     txn.Commit();
-                    Console.WriteLine($"{DateTime.Now} DB Transaction committed");
+                    Console.WriteLine($"{DateTime.Now:o} DB Transaction committed");
                 }
             } catch
             {
@@ -174,8 +174,8 @@ SELECT EventId, Name, AotInsertionMarker FROM #Tmp{tmpLevel}", transaction: txn)
 
                 txn.Rollback();
             }
-            Console.WriteLine($"{DateTime.Now} Commit level {tmpLevel} executed");
 
+            Console.WriteLine($"{DateTime.Now:o} Commit level {tmpLevel} executed");
 
             if (tmpLevel == 0)
             {
