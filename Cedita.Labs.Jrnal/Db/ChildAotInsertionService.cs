@@ -38,8 +38,20 @@ namespace Cedita.Labs.Jrnal.Db
 
             if (typeof(TModel) == typeof(Db.Models.SingleRendering))
             {
-                var repo = services.GetRequiredService<IRepository<Models.SingleRendering>>();
-                await repo.InsertManyAsync((IEnumerable<Cedita.Labs.Jrnal.Db.Models.SingleRendering>)models);
+                using (var sqlBulkCopy = new SqlBulkCopier<TModel>((SqlConnection)db, $"Renderings", false, txn))
+                {
+                    sqlBulkCopy.BulkCopy.ColumnMappings.Clear();
+                    sqlBulkCopy.InternalTable.Columns.Remove("AotInsertionMarker");
+                    sqlBulkCopy.InternalTable.Columns.Remove("AotParentMarker");
+                    foreach (DataColumn column in sqlBulkCopy.InternalTable.Columns)
+                        sqlBulkCopy.BulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName);
+                    foreach (var row in models)
+                    {
+                        sqlBulkCopy.AddRow(row);
+                    }
+
+                    await sqlBulkCopy.WriteToServerAsync();
+                }
                 return;
             }
 
@@ -88,7 +100,7 @@ SELECT ApplicationId, Timestamp, Level, MessageTemplate, HasException, AotInsert
                     var obj = (IEnumerable<Models.Event>)(models);
                     await InsertWithChildrenAsync(obj.SelectMany(m => m.Properties), false, 1+tmpLevel, txn);
                     // Manual high levelling to avoid conflicts with lower levels on Property recursion
-                    await InsertWithChildrenAsync(obj.SelectMany(m => m.RenderingGroups), false, 68+tmpLevel, txn);
+                    await InsertWithChildrenAsync(obj.SelectMany(m => m.RenderingGroups), false, 69+tmpLevel, txn);
                 }
                 else if (typeof(TModel) == typeof(Db.Models.Property))
                 {
@@ -132,9 +144,9 @@ SELECT EventId, ParentPropertyId, Name, Value, AotInsertionMarker FROM #Tmp{tmpL
                 }
                 else if (typeof(TModel) == typeof(Db.Models.RenderingGroup))
                 {
-                    await db.ExecuteAsync($@"CREATE TABLE #Tmp{tmpLevel} ([Id] INT NULL, [EventId] INT,
+                    await db.ExecuteAsync($@"CREATE TABLE #Tmp{tmpLevel} ([Id] INT, [EventId] INT,
 		[Name] NVARCHAR(100) NOT NULL,
-		[AotInsertionMarker] INT, [AotParentMarker] INT NULL)", transaction: txn);
+		[AotInsertionMarker] INT, [AotParentMarker] INT)", transaction: txn);
 
                     using (var sqlBulkCopy = new SqlBulkCopier<TModel>((SqlConnection)db, $"#Tmp{tmpLevel}", false, txn))
                     {
@@ -157,8 +169,8 @@ SELECT EventId, Name, AotInsertionMarker FROM #Tmp{tmpLevel}", transaction: txn)
                         foreach (var child in dbRenderingGroup.Renderings) child.RenderingGroupId = dictReturns[dbRenderingGroup.AotInsertionMarker];
                     }
 
-                    var obj = (IEnumerable<Models.Property>)(models);
-                    await InsertWithChildrenAsync(obj.SelectMany(m => m.Children), false, 1+tmpLevel, txn);
+                    var obj = (IEnumerable<Models.RenderingGroup>)(models);
+                    await InsertWithChildrenAsync(obj.SelectMany(m => m.Renderings), false, 1+tmpLevel, txn);
                 }
 
                 await db.ExecuteAsync($"DROP TABLE IF EXISTS #Tmp{tmpLevel}", transaction: txn);
