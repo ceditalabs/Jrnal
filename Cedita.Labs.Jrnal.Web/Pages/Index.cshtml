@@ -1,6 +1,198 @@
-﻿@page
+﻿@page "{id:int?}"
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
 
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+
+            <div class="panel-heading log-container">
+                <h6 class="panel-title">Instance Selection</h6>
+                <div class="heading-elements">
+                    <form class="heading-form" method="get" autocomplete="off">
+                        <div class="form-group">
+                            <select asp-for="InstanceId" id="instanceSelection" class="form-control">
+                                <option>-- Loading Instances --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Select Instance</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <h6 class="panel-title">Application Log</h6>
+                <div class="heading-elements">
+                    <div class="heading-btn">
+                        <button type="button" class="btn btn-primary btn-icon application_log_start_trigger"><i class="icon-play3"></i></button>
+                        <button type="button" class="btn btn-warning btn-icon application_log_stop_trigger"><i class="icon-stop"></i></button>
+                        <button type="button" class="btn btn-danger btn-icon application_log_clear"><i class="icon-bin2"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="log disabled" id="application_log"></div>
+        </div>
+
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <h6 class="panel-title">Error Log</h6>
+                <div class="heading-elements">
+                    <div class="heading-btn">
+                        <button type="button" class="btn btn-primary btn-icon error_log_start_trigger"><i class="icon-play3"></i></button>
+                        <button type="button" class="btn btn-warning btn-icon error_log_stop_trigger"><i class="icon-stop"></i></button>
+                        <button type="button" class="btn btn-danger btn-icon error_log_clear"><i class="icon-bin2"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="log disabled" id="error_log"></div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <h6 class="panel-title">Mail Log</h6>
+                <div class="heading-elements">
+                    <div class="heading-btn">
+                        <button type="button" class="btn btn-primary btn-icon mail_log_start_trigger"><i class="icon-play3"></i></button>
+                        <button type="button" class="btn btn-warning btn-icon mail_log_stop_trigger"><i class="icon-stop"></i></button>
+                        <button type="button" class="btn btn-danger btn-icon mail_log_clear"><i class="icon-bin2"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="log disabled" id="mail_log"></div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading log-container">
+                <h6 class="panel-title">Filtered Log</h6>
+                <div class="heading-elements">
+                    <form class="heading-form" action="#">
+
+
+                        <div class="form-group">
+                            <input type="datetime-local" class="form-control" name="FromTime" id="search_log_FromTime" placeholder="From Time..." value="@DateTime.Today.ToString("yyyy-MM-ddT00:00:00")" />
+                        </div>
+                        <div class="form-group">
+                            <input type="datetime-local" class="form-control" name="ToTime" id="search_log_ToTime" placeholder="To Time..." value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-ddT00:00:00")" />
+                        </div>
+                        <div class="form-group has-feedback">
+                            <input type="search" class="form-control" placeholder="Search..." name="MessageFilter" id="search_log_Message" />
+                            <div class="form-control-feedback">
+                                <i class="icon-search4 text-size-base text-muted"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="heading-btn">
+                        <button type="button" class="btn btn-primary btn-icon search_log_start_trigger"><i class="icon-search4"></i></button>
+                        <button type="button" class="btn btn-warning btn-icon search_log_stop_trigger"><i class="icon-stop"></i></button>
+                        <button type="button" class="btn btn-danger btn-icon search_log_clear"><i class="icon-bin2"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="log disabled" id="search_log"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">No Instance Selected</h4>
+            </div>
+            <div class="modal-body">
+                <p>You must select an instance to view the relevant logs. Please select an instance and try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            var selectedInstance = '@Model.InstanceId';
+
+            // Load the instance selection
+            $.ajax({
+                url: 'https://localhost:5001/api/web/Applications/List',
+                dataType: 'json'
+            }).done(function (applications) {
+                var $target = $('#instanceSelection');
+                $target.html('<option value="">Please select an instance</option>');
+
+                for (var instance in applications) {
+                    $target.append('<option value="' + applications[instance].id + '" ' + (applications[instance].id == selectedInstance ? "selected='selected'" : '') + '>' + applications[instance].name + '</option>')
+                }
+            });
+
+            $('#instanceSelection').on('change', function () {
+                selectedInstance = $(this).val();
+
+                if (appLog !== undefined) appLog.setInstanceId(selectedInstance);
+                if (errorLog !== undefined) errorLog.setInstanceId(selectedInstance);
+                if (mailLog !== undefined) mailLog.setInstanceId(selectedInstance);
+                if (searchLog !== undefined) searchLog.setInstanceId(selectedInstance);
+            });  
+
+            // Initialise our application log
+            var appLog = (new Cedita.Labs.Logger())
+                .setLogUrl('https://localhost:5001/api/web/Events/FromTime?category=0')
+                .setTarget('application_log')
+                .enableIcons(true)
+                .setHighlight(true)
+                .setInterval(1000)
+                .setInstanceId(selectedInstance)
+                .init();
+
+            // Initialise our error log
+            var errorLog = (new Cedita.Labs.Logger())
+                .setLogUrl('https://localhost:5001/api/web/Events/FromTime?category=1')
+                .setTarget('error_log')
+                .enableIcons(true)
+                .setHighlight(true)
+                .setInterval(5000)
+                .setInstanceId(selectedInstance)
+                .init();
+
+            // Initialise our mail log
+            var mailLog = (new Cedita.Labs.Logger())
+                .setLogUrl('https://localhost:5001/api/web/Events/FromTime?category=2')
+                .setTarget('mail_log')
+                .enableIcons(true)
+                .setHighlight(true)
+                .setInterval(5000)
+                .setInstanceId(selectedInstance)
+                .init();
+
+            // Initialise our mail log
+            var searchLog = (new Cedita.Labs.Logger())
+                .setLogUrl('https://localhost:5001/api/web/Events/Search')
+                .setTarget('search_log')
+                .enableIcons(true)
+                .setHighlight(true)
+                .enableSearch(true)
+                .setInstanceId(selectedInstance)
+                .init();
+        });
+
+    </script>
+}

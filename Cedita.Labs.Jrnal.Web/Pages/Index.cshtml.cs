@@ -9,9 +9,12 @@ namespace Cedita.Labs.Jrnal.Web.Pages
 {
     public class IndexModel : PageModel
     {
-        public void OnGet()
+        [BindProperty]
+        public int InstanceId { get; set; }
+        public void OnGet(int? instanceId)
         {
-
+            if (instanceId.HasValue)
+                InstanceId = instanceId.Value;
         }
     }
 }

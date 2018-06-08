@@ -39,6 +39,8 @@ namespace Cedita.Labs.Jrnal
             services.AddScoped<ChildAotInsertionService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,7 +56,12 @@ namespace Cedita.Labs.Jrnal
             }
 
             dbProvisioner.AddStepsFromAssemblyResources(typeof(Startup).Assembly);
-            dbProvisioner.Provision();
+            if (!dbProvisioner.Provision())
+                throw new Exception("Could not open database connection");
+
+#if DEBUG
+            app.UseCors(builder => builder.WithOrigins("https://localhost:44379").AllowAnyHeader().AllowAnyMethod());
+#endif
 
             app.UseHttpsRedirection();
             app.UseMvc();

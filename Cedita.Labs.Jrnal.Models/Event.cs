@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace Cedita.Labs.Jrnal.Models
 {
+    public enum EventTypeCategory
+    {
+        Application,
+        Error,
+        Mail
+    }
+
     public class Event
     {
         public DateTimeOffset Timestamp { get; set; }
